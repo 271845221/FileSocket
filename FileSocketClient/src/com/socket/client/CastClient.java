@@ -2,14 +2,13 @@ package com.socket.client;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import com.socket.client.callback.OnResultListener;
+import com.socket.client.util.SingleTaskUitls;
 
 public class CastClient {
 
-	private Timer mTimer;
 	private int mPort = 9999;
 	private DatagramSocket mDatagramSocket;
 	
@@ -22,16 +21,13 @@ public class CastClient {
 	}
 	
 	public void receiveTimerCast(final OnResultListener<String> listener) {
-		if (mTimer == null) {
-			mTimer = new Timer();
-			mTimer.schedule(new TimerTask() {
-				
-				@Override
-				public void run() {
-					receiveCast(listener);
-				}
-			}, 0, 2000);
-		}
+		SingleTaskUitls.scheduleAtFixedRate(new Runnable() {
+			
+			@Override
+			public void run() {
+				receiveCast(listener);
+			}
+		}, 0, 2000, TimeUnit.MILLISECONDS);
 	}
 	
 	public void receiveCast(OnResultListener<String> listener) {
@@ -55,8 +51,6 @@ public class CastClient {
 		if (mDatagramSocket != null) {
 			mDatagramSocket.close();
 		}
-		if (mTimer != null) {
-			mTimer.cancel();
-		}
+		SingleTaskUitls.shutdownNow();
 	}
 }

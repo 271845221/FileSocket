@@ -3,12 +3,12 @@ package com.socket.server;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+
+import com.socket.server.util.SingleTaskUitls;
 
 public class CastServer {
 
-	private Timer mTimer;
 	private int mPort = 9999;
 	DatagramSocket mDatagramSocket;
 	
@@ -21,16 +21,12 @@ public class CastServer {
 	}
 	
 	public void sendTimerCast(final byte[] message) {
-		if (mTimer == null) {
-			mTimer = new Timer();
-			mTimer.schedule(new TimerTask() {
-				
-				@Override
-				public void run() {
-					sendCast(message);
-				}
-			}, 0, 2000);
-		}
+		SingleTaskUitls.scheduleAtFixedRate(new Runnable() {
+			
+			public void run() {
+				sendCast(message);
+			}
+		}, 0, 2000, TimeUnit.MILLISECONDS);
 	}
 	
 	public void sendCast(byte[] message) {
@@ -49,8 +45,6 @@ public class CastServer {
 		if (mDatagramSocket != null) {
 			mDatagramSocket.close();
 		}
-		if (mTimer != null) {
-			mTimer.cancel();
-		}
+		SingleTaskUitls.shutdownNow();
 	}
 }
