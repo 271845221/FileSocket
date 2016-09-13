@@ -112,12 +112,19 @@ public class ClientWindow extends JFrame implements ActionListener {
 					return;
 				}
 				String[] ss = t.split(",");
-				mHostField.setText(ss[0]);
-				mPortField.setText(ss[1]);
+				String host = mHostField.getText();
+				if (Uitity.isEmpty(host)) {
+					mHostField.setText(ss[0]);
+				}
+				String port = mPortField.getText();
+				if (Uitity.isEmpty(port)) {
+					mPortField.setText(ss[1]);
+				}
+				
 				mHost.put(ss[0], ss[1]);
 				
 				// actionConfigHost();
-				mCastClient.quit();
+				// mCastClient.quit();
 			}
 		});
 	}
